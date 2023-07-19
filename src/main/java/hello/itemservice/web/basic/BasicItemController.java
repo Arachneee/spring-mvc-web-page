@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import hello.itemservice.domain.item.Item;
 import hello.itemservice.domain.item.ItemRepository;
@@ -58,13 +59,64 @@ public class BasicItemController {
 		return "basic/item";
 	}
 
-	@PostMapping("/add")
+	// @PostMapping("/add")
 	public String addItemV2(@ModelAttribute("item") Item item) { //, Model model) {
 
 		itemRepository.save(item);
 		// model.addAttribute("item", item);   자동 추가
 
 		return "basic/item";
+	}
+
+	// @PostMapping("/add")
+	public String addItemV3(@ModelAttribute Item item) { //, Model model) {
+
+		itemRepository.save(item);
+		// model.addAttribute("item", item);   자동 추가
+
+		return "basic/item";
+	}
+
+	// @PostMapping("/add")
+	public String addItemV4(Item item) { //, Model model) {
+
+		itemRepository.save(item);
+		// model.addAttribute("item", item);   자동 추가
+
+		return "basic/item";
+	}
+
+	// @PostMapping("/add")
+	public String addItemV5(Item item) { //, Model model) {
+
+		itemRepository.save(item);
+		// model.addAttribute("item", item);   자동 추가
+
+		return "redirect:/basic/items/" + item.getId();
+	}
+
+	@PostMapping("/add")
+	public String addItemV6(Item item, RedirectAttributes redirectAttributes) { //, Model model) {
+
+		Item saveItem = itemRepository.save(item);
+		redirectAttributes.addAttribute("itemId", saveItem.getId());
+		redirectAttributes.addAttribute("save", true);   //?status=true로 넘어간다.
+		return "redirect:/basic/items/{itemId}";
+	}
+
+
+	@GetMapping("/{itemId}/edit")
+	public String editForm(@PathVariable Long itemId, Model model) {
+		Item item = itemRepository.findById(itemId);
+		model.addAttribute("item", item);
+		return "basic/editForm";
+	}
+
+	@PostMapping("/{itemId}/edit")
+	public String edit(@PathVariable Long itemId, @ModelAttribute Item item, RedirectAttributes redirectAttributes) {
+		itemRepository.update(itemId, item);
+		redirectAttributes.addAttribute("edit", true);
+		return "redirect:/basic/items/{itemId}";   //view로 안가고 url다시 호출
 	}
 	/**
 	 * 테스트용 데이터 추가
